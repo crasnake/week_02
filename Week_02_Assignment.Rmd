@@ -12,7 +12,35 @@ knitr::opts_chunk$set(echo = TRUE)
 1.  Install the `nycflights13` package and load it into the namespace of your R session. Also, load the `tidyverse` package into the namespace of your R session. Attach the `airlines`, `airports`, `flights`, `weather`, and `planes` datasets
 
 ```{r}
+install.packages("tidyverse")
+```
+```{r}
+library(tidyverse)
+```
 
+```{r}
+install.packages("nycflights13")
+```
+```{r}
+library("nycflights13")
+```
+```{r}
+data("airlines")
+```
+```{r}
+airlines
+```
+```{r}
+airports
+```
+```{r}
+flights
+```
+```{r}
+weather
+```
+```{r}
+planes
 ```
 
 2.  We'll begin by exploring the `flights` dataset. Determine the following information about the dataset.
@@ -22,7 +50,13 @@ knitr::opts_chunk$set(echo = TRUE)
 -   Summary Statistics for each column
 
 ```{r}
-
+str(flights)
+```
+```{r}
+summary(flights)
+```
+```{r}
+dim(flights)
 ```
 
 3.  We'll be concentrating on a few key fields. Use the vignette about the `flights` table to look up the definitions of the following fields:
@@ -34,37 +68,61 @@ knitr::opts_chunk$set(echo = TRUE)
 Copy those definitions as a response here.
 
 ```{r}
+#dep_delay, arr_delay
+  #Departure and arrival delays, in minutes. Negative times represent early departures/arrivals.
+#hour, minute
+  #Time of scheduled departure broken into hour and minutes.
+#origin, dest
+  #Origin and destination. See airports for additional metadata.
 
 ```
 
 4.  Create a bar chart that demonstrates which origin occurs most frequently. Write a short interpretation of the bar graph.
 
 ```{r}
-
+ggplot(data = flights,
+       aes(x = origin)) +
+  geom_bar(fill = "blue")
 ```
+#The graph above demonstrates the number of flights that depart from 3 airports in NYC. EWR has the most departures and LGA has the least. 
 
 5.  What is the distribution of flight departure times by hour? Describe the plot that you created.
 
     *Hint: Consider different geometries when creating the graph. Histograms are usually a good place to start when considering distributions, but bar plots can be helpful as well.*
 
 ```{r}
+ggplot(data = flights) +
+  geom_histogram(aes(x = sched_dep_time))
 
 ```
+#The above graph is a histogram demonstrating the number of flights departing per hour. Between 6-7am has the most departures with with the next largest being between 4-5pm. The least number of departures occur at 4am and 12am.
 
 6.  How does the distribution change when we consider the origin of the flight? Build upon your response in question 5. Describe the differences.
 
     *Hint: Experiment with faceting to find a view that is most helpful.*
 
 ```{r}
-
+ggplot(data = flights) +
+  geom_histogram(aes(x = sched_dep_time)) +
+  facet_grid((~origin))
 ```
+#When separating the 3 origins, EWR has the most number of flights at 6am and the least at 12am. JFK and LGA do not have any departures before 5am but EWR has a select amount.
 
 7.  How does departure hour interact with departure delay? Utilize a [boxplot](https://towardsdatascience.com/understanding-boxplots-5e2df7bcbd51). Interpret the graph.
 
     *Hint: It can be helpful to adjust the portion of the graph that you observe in order to find patterns. Consider using `coord_cartesian` to help with this.*
-
+#coord_cartesian(ylim = c(1000, 2400), expand = FALSE)
 ```{r}
-
+ggplot(data = flights) +
+  geom_boxplot(aes(x = dep_delay,
+                   y = sched_dep_time))
+coord_cartesian(
+  xlim = NULL,
+  ylim = NULL,
+  expand = TRUE,
+  default = FALSE,
+  clip = "on"
+)
 ```
 
 8.  Create your own question and answer it by using a graph. You may use any of the datasets loaded in the `nycflights13` package.
@@ -73,4 +131,25 @@ Copy those definitions as a response here.
 -   Create a graph that assists in answering the question.
 -   Write a short interpretation of the graph in order to answer your question.
 
+-Question: Which airport has the least amount of flights over 2000 miles and under 400 minutes?
+
+```{r}
+ggplot(data = flights,
+       aes(x = distance,
+           y = air_time)) +
+  geom_point(aes(color = origin)) +
+  geom_smooth(aes(group = origin),
+              color = "black") +
+  facet_grid((origin ~ .))
+```
+#The graph above demonstrates the total distance (miles) compared to air time (min) between the 3 airports in NYC. LGA has the shortest distance and flight time amongst the airports.
+
+
 9.  You have now built a variety of graphics using the `ggplot2` system. Describe some of the advantages to the "grammar of graphics" approach to creating graphs.
+
+#It helps us with creating graphs by combining individual components.It also helps us look at unrelated data that finding commonalities. 
+
+```{r}
+sessionInfo()
+```
+
